@@ -6,52 +6,94 @@
 
     {{flash-display}}
 
-    <div class="wrapper-main">
-      <div id="main" role="main">
-        {{#if isEmpty}}
-          {{repos-empty}}
-        {{else}}
-          {{#if repo.isLoaded}}
-            <article class="repo-header">
-              <header>
-                <h1 class="repo-title">{{#link-to "owner" repo.owner.login}}{{repo.owner.login}}{{/link-to}} / {{#link-to "repo" repo}}{{repo.name}}{{/link-to}}</h1>
-                  <a href="{{urlGithub}}" title="{{repo.name}} on GitHub" class="repo-gh">
-                    {{inline-svg 'icon-repooctocat'}}</a>
-                  <div class="repo-badge">
-                    <a href="#" id="status-image-popup" title="Latest push build on default branch: {{repo.defaultBranch.lastBuild.state}}" name="status-images" class="open-popup" {{action "statusImages"}}>
-                      <img src={{statusImageUrl}} alt="build:{{repo.defaultBranch.lastBuild.state}}"/>
-                    </a>
-                  </div>
-              </header>
-              <main class="repo-main">
-              <div class="repo-navigation">
-                {{repo-show-tools repo=repo build=build job=job tab=tab}}
+    <button class="button" type="button">Trigger build</button>
 
-                {{repo-show-tabs repo=repo tab=tab build=build job=job}}
-              </div>
-              <div class="travistab-body repo-body">
-                {{outlet}}
-              </div>
-              </main>
-            </article>
+    <div class="t-modal">
+      <div class="t-modal-inner">
 
-          {{else}}
-            {{loading-indicator}}
-          {{/if}}
-        {{/if}}
+        <h2 class="small-title">Trigger a custom build</h2>
 
-        {{status-images repo=repo}}
+        <p class="helptext">A custom build only exists on Travis CI and will not appear in your git history.</p>
+
+        {{#x-select value=branch on-change=(action (mut branch)) as |xs|}}
+          {{#each branches as |branch|}}
+            {{#xs.option value=branch}}{{branch}}{{/xs.option}}
+          {{/each}}
+        {{/x-select}}
+
+        {{input value="" placeholder="Commit message"}}
+
+        {{textarea value="" placeholder="Custom config" id=(concat elementId '-name')}}
+        <p>The config needs to be entered in '' format</p>
+
+        {{input type="submit" class="form-submit" value="Trigger custom build" title="Trigger custom build with your settings"}}
+
+        <button type="button" class="" title="Close custom build modal">Cancel</button>
       </div>
     </div>
 
-    <aside id="left" class="{{unless auth.signedIn 'hidden'}}">
-      {{outlet "left"}}
-    </aside>
 
-    {{#if auth.signedOut}}
-      {{page-footer}}
-    {{else if features.dashboard}}
-      {{page-footer}}
-    {{/if}}
+    {{#if repo.isLoaded}}
+      <article class="repo-header">
+        <header>
+          <h1 class="repo-title">{{#link-to "owner" repo.owner.login}}{{repo.owner.login}}{{/link-to}} / {{#link-to "repo" repo}}{{repo.name}}{{/link-to}}</h1>
+          <a href="{{urlGithub}}" title="{{repo.name}} on GitHub" class="repo-gh">
+            {{inline-svg 'icon-repooctocat'}}</a>
+          <div class="repo-badge">
+            <a href="#" id="status-image-popup" title="Latest push build on default branch: {{repo.defaultBranch.lastBuild.state}}" name="status-images" class="open-popup" {{action "statusImages"}}>
+              <img src={{statusImageUrl}} alt="build:{{repo.defaultBranch.lastBuild.state}}"/>
+            </a>
+          </div>
+        </header>
+        <main class="repo-main">
+          <div class="repo-navigation">
+            {{repo-show-tools repo=repo build=build job=job tab=tab}}
+            <div class="wrapper-main">
+              <div id="main" role="main">
+                {{#if isEmpty}}
+                  {{repos-empty}}
+                {{else}}
+                  {{#if repo.isLoaded}}
+                    <article class="repo-header">
+                      <header>
+                        <h1 class="repo-title">{{#link-to "owner" repo.owner.login}}{{repo.owner.login}}{{/link-to}} / {{#link-to "repo" repo}}{{repo.name}}{{/link-to}}</h1>
+                        <a href="{{urlGithub}}" title="{{repo.name}} on GitHub" class="repo-gh">
+                          {{inline-svg 'icon-repooctocat'}}</a>
+                        <div class="repo-badge">
+                          <a href="#" id="status-image-popup" title="Latest push build on default branch: {{repo.defaultBranch.lastBuild.state}}" name="status-images" class="open-popup" {{action "statusImages"}}>
+                            <img src={{statusImageUrl}} alt="build:{{repo.defaultBranch.lastBuild.state}}"/>
+                          </a>
+                        </div>
+                      </header>
+                      <main class="repo-main">
+                        <div class="repo-navigation">
+                          {{repo-show-tools repo=repo build=build job=job tab=tab}}
+
+                          {{repo-show-tabs repo=repo tab=tab build=build job=job}}
+                        </div>
+                        <div class="travistab-body repo-body">
+                          {{outlet}}
+                        </div>
+                      </main>
+                    </article>
+
+                  {{else}}
+                    {{loading-indicator}}
+                  {{/if}}
+                {{/if}}
+
+                {{status-images repo=repo}}
+              </div>
+            </div>
+
+            <aside id="left" class="{{unless auth.signedIn 'hidden'}}">
+              {{outlet "left"}}
+            </aside>
+
+            {{#if auth.signedOut}}
+              {{page-footer}}
+            {{else if features.dashboard}}
+              {{page-footer}}
+            {{/if}}
+          </div>
   </div>
-</div>

@@ -43,6 +43,10 @@ export default Ember.Controller.extend({
     return this.get('repo.currentBuild.id') && this.get('repo.active');
   }),
 
+  branches: Ember.computed('repo.id', 'repo.slug', function() {
+    return ['lol', 'foo'];
+  }),
+
   actions: {
     statusImages() {
       this.get('popup').open('status-images');
