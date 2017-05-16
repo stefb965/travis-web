@@ -1,0 +1,25 @@
+<div class="t-modal">
+  <div class="t-modal-inner">
+
+    <h2 class="small-title">Trigger a custom build</h2>
+
+    <p class="helptext">A custom build only exists on Travis CI and will not appear in your git history.</p>
+
+    <div class="from-elem">
+      {{#x-select value=branch on-change=(action (mut branch)) as |xs|}}
+        {{#each branches as |branch|}}
+          {{#xs.option value=branch}}{{branch}}{{/xs.option}}
+        {{/each}}
+      {{/x-select}}
+    </div>
+
+    {{input value="" placeholder="Commit message"}}
+
+    {{textarea value="" placeholder="Custom config" id=(concat elementId '-name')}}
+    <p>The config needs to be entered in '' format</p>
+
+    {{input type="submit" class="form-submit" value="Trigger custom build" title="Trigger custom build with your settings"}}
+
+    <button {{action 'close'}} type="button" class="" title="Close custom build modal">Cancel</button>
+  </div>
+</div>

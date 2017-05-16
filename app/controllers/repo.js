@@ -43,13 +43,52 @@ export default Ember.Controller.extend({
     return this.get('repo.currentBuild.id') && this.get('repo.active');
   }),
 
-  branches: Ember.computed('repo.id', 'repo.slug', function() {
-    return ['lol', 'foo'];
+  branches: Ember.computed('popupName', 'repo', function () {
+    let repoId = this.get('repo.id'),
+      popupName = this.get('popupName');
+
+    if (popupName === 'trigger-custom-build') {
+      let array = Ember.ArrayProxy.create({ content: [] }),
+        apiEndpoint = Config.apiEndpoint,
+        options = {
+          headers: {
+            'Travis-API-Version': '3'
+          }
+        };
+
+      array.set('isLoaded', false);
+
+      if (this.get('auth.signedIn')) {
+        options.headers.Authorization = `token ${this.auth.token()}`;
+      }
+
+      let url = `${apiEndpoint}/repo/${repoId}/branches?limit=100`;
+      Ember.$.ajax(url, options).then(response => {
+        if (response.branches.length) {
+          let branchNames = response.branches.map(branch => branch.name);
+          array.pushObjects(branchNames);
+        } else {
+          array.pushObject('master');
+        }
+
+        array.set('isLoaded', true);
+      });
+
+      return array;
+    } else {
+      // if status images popup is not open, don't fetch any branches
+      return [];
+    }
   }),
 
   actions: {
     statusImages() {
       this.get('popup').open('status-images');
+      return false;
+    },
+    triggerCustomBuild() {
+      console.log('heya');
+      this.get('popup').open('trigger-custom-build');
       return false;
     }
   },
