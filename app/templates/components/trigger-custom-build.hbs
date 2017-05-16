@@ -1,25 +1,28 @@
-<div class="t-modal">
-  <div class="t-modal-inner">
+<h2 class="h3--teal">Trigger a custom build</h2>
 
-    <h2 class="small-title">Trigger a custom build</h2>
+<p class="helptext">A custom build only exists on Travis CI and will not appear in your git history.</p>
 
-    <p class="helptext">A custom build only exists on Travis CI and will not appear in your git history.</p>
+<div class="from-elem">
+  <label for="trigger-build-branches" class="form-label">Select a branch</label>
+  {{#x-select id="trigger-build-branches" value=branch on-change=(action (mut branch)) as |xs|}}
+    {{#each repo.branches as |branch|}}
+      {{#xs.option value=branch.name}}{{branch.name}}{{/xs.option}}
+    {{/each}}
+  {{/x-select}}
 
-    <div class="from-elem">
-      {{#x-select value=branch on-change=(action (mut branch)) as |xs|}}
-        {{#each branches as |branch|}}
-          {{#xs.option value=branch}}{{branch}}{{/xs.option}}
-        {{/each}}
-      {{/x-select}}
-    </div>
+</div>
 
-    {{input value="" placeholder="Commit message"}}
+<div class="form-elem">
+  <label for="trigger-build-message" class="form-label">Custom commit message</label>
+  {{input value="" placeholder="Commit message" id="rigger-build-message"}}
+</div>
 
-    {{textarea value="" placeholder="Custom config" id=(concat elementId '-name')}}
-    <p>The config needs to be entered in '' format</p>
+<div class="form-elem">
+  <label for="trigger-build-config" class="form-label">Custom config</label>
+  {{textarea value="" placeholder="Custom config" id="trigger-build-config"}}
+  <p class="form-helptext">The config needs to be entered in '' format</p>
+</div>
 
-    {{input type="submit" class="form-submit" value="Trigger custom build" title="Trigger custom build with your settings"}}
-
-    <button {{action 'close'}} type="button" class="" title="Close custom build modal">Cancel</button>
-  </div>
+<div class="form-elem">
+  <button {{action 'triggerCustomBuild'}} type="button" class="form-submit" title="Trigger custom build with your settings">Trigger custom build</button>
 </div>

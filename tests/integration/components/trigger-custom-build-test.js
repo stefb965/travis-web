@@ -5,21 +5,8 @@ moduleForComponent('trigger-custom-build', 'Integration | Component | trigger cu
   integration: true
 });
 
-test('it renders', function(assert) {
-
-  // Set any properties with this.set('myProperty', 'value');
-  // Handle any actions with this.on('myAction', function(val) { ... });
-
+test('it renders', function (assert) {
   this.render(hbs`{{trigger-custom-build}}`);
 
-  assert.equal(this.$().text().trim(), '');
-
-  // Template block usage:
-  this.render(hbs`
-    {{#trigger-custom-build}}
-      template block text
-    {{/trigger-custom-build}}
-  `);
-
-  assert.equal(this.$().text().trim(), 'template block text');
+  assert.equal(this.$().find('h2').text().trim(), 'Trigger a custom build');
 });
