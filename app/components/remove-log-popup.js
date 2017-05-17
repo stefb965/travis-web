@@ -22,6 +22,9 @@ export default Ember.Component.extend({
           return this.get('flashes').error('An error occurred when removing the log');
         }
       });
+    },
+    toggleRemoveLogModal() {
+      this.get('onRemoveCloseModal')();
     }
   }
 });

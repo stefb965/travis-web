@@ -69,5 +69,11 @@ export default Ember.Component.extend({
       case 'CCTray':
         return this.get('statusImages').ccXml(slug, branch);
     }
+  },
+
+  actions: {
+    toggleStatusImageModal() {
+      this.get('onClose')();
+    }
   }
 });
