@@ -5,11 +5,13 @@ const { service } = Ember.inject;
 
 export default Ember.Component.extend({
   ajax: service(),
-  flashes: service(),
 
   triggerBuildMessage: '',
   triggerBuildConfig: '',
   triggerBuildBranch: '',
+
+  afterTriggerState: false,
+  triggeredBuildId: false,
 
   sendTriggerRequest: task(function* () {
     let body = {
@@ -21,8 +23,7 @@ export default Ember.Component.extend({
     try {
       yield this.get('ajax').postV3(`/repo/${this.get('repo.id')}/requests`, body)
         .then((data) => {
-          this.get('flashes')
-            .success('You triggered a build! We\'re waiting to see if the request got through.');
+          this.set('afterTriggerStatus', `Build request was sent, waiting to hear back.`);
 
           let reqId = data.request.id;
           Ember.run.later(this, function () {
@@ -31,23 +32,24 @@ export default Ember.Component.extend({
                     { headers: { 'Travis-API-Version': '3' } })
               .then((data) => {
                 let reqResult = data.result;
+                let triggeredBuild = data.builds[0];
 
                 if (reqResult === 'approved') {
-                  this.get('flashes')
-                    .success(`Your request was ${reqResult}.`);
-                } else {
-                  this.get('flashes')
-                    .error(`Your request was ${reqResult}.`);
+                  this.set('afterTriggerStatus', `Your request was ${reqResult}.`);
+                  this.set('triggeredBuildId', triggeredBuild.id);
+                } else if (reqResult === 'rejected') {
+                  this.set('afterTriggerStatus', `Your request was ${reqResult}. Please see the Request tab for more information.`);
+                } else { // pending etc
+                  this.set('afterTriggerStatus', `Your request was not ready yet. Please see the Request tab for more information.`);
                 }
-              });
-          },  1000);
 
-          this.get('onClose')();
+                Ember.run.later(this, this.get('onClose'), 3000);
+              });
+          }, 2000);
         });
     } catch (e) {
-      this.get('flashes')
-        .error('There was an error with the build requets, it did not get through');
-      this.get('onClose')();
+      this.set('afterTriggerStatus', `Your build request did not get through. Please try again later`);
+      Ember.run.later(this, this.get('onClose'), 3000);
     }
   }),
 

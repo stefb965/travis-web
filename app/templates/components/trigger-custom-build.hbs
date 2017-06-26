@@ -19,15 +19,23 @@
 <div class="form-elem">
   <label for="trigger-build-config" class="form-label">Custom config</label>
   {{textarea value=triggerBuildConfig on-change=(action (mut triggerBuildConfig)) placeholder="Custom config" id="trigger-build-config"}}
-  <p class="form-helptext">The config needs to be entered in '' format</p>
+  <p class="form-helptext">Enter config as valid JSON</p>
 </div>
 
-{{#if sendTriggerrequest.isRunning}}
-  {{loading-indicator}}
+{{#if afterTriggerStatus}}
+  <p class="notice-banner--blue">{{afterTriggerStatus}}
+  {{#if triggeredBuildId}}
+    <br>{{#link-to 'build' triggeredBuildId}}See your triggered build here{{/link-to}}
+  {{/if}}
+  </p>
 {{else}}
-  <div class="form-elem">
-    <button {{action 'triggerCustomBuild'}} type="button" class="form-submit" title="Trigger custom build with your settings">Trigger custom build</button>
-  </div>
+  {{#if sendTriggerRequest.isRunning}}
+    {{loading-indicator}}
+  {{else}}
+    <div class="form-elem">
+      <button {{action 'triggerCustomBuild'}} type="button" class="form-submit" title="Trigger custom build with your settings">Trigger custom build</button>
+    </div>
+  {{/if}}
 {{/if}}
 
 <button trype="button" title="Close modal" class="modal-close pointer" {{action 'toggleTriggerBuildModal'}}>{{inline-svg 'icon-failed' class="icon"}}</button>
