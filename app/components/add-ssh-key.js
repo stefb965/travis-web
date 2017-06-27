@@ -12,10 +12,15 @@ export default Ember.Component.extend({
   didInsertElement() {
     let id = this.get('repo.id');
     let store = this.get('store');
-    const model = store.peekRecord('ssh_key', id)
-      || store.createRecord('ssh_key', { id });
+    const currentKey = store.peekRecord('ssh_key', id);
+    store.unloadRecord(currentKey);
 
-    return this.set('model', model);
+    // the following both show nothing in the store, but exception is raised
+    // anyway...
+    // store.peekAll('ssh_key');
+    // store.peekRecord('ssh_key', id)
+
+    return this.set('model', store.createRecord('ssh_key', { id }));
   },
 
   isValid() {
