@@ -2,6 +2,7 @@
 import { test } from 'qunit';
 import moduleForAcceptance from 'travis/tests/helpers/module-for-acceptance';
 import settingsPage from 'travis/tests/pages/settings';
+import Mirage from 'ember-cli-mirage';
 
 moduleForAcceptance('Acceptance | repo settings', {
   beforeEach() {
@@ -321,6 +322,12 @@ test('delete and set SSH keys', function (assert) {
 
   server.delete('/settings/ssh_key/:id', function (schema, request) {
     deletedIds.push(request.params.id);
+    schema.sshKeys
+      .where({ repositoryId: request.queryParams.id })
+      .models
+      .map(sshKey => sshKey.destroyRecord());
+
+    return new Mirage.Response(204, {}, {});
   });
 
   settingsPage.sshKey.delete();
